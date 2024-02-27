@@ -1,35 +1,50 @@
-// Create a web server
-// 1. Create a web server
-// 2. Define a port to listen to
-// 3. Start the server and listen to the port
-// 4. Create a route to handle the request
-// 5. Get the data from the comments.json
-// 6. Convert the data to a string
-// 7. Send the data back to the client
-// 8. Send the error message to the client if there is an error
+// Create a web server that listens on port 3000 using express
+// Use the express.Router to create a new router
+// Create a route for GET /comments that returns a list of comments
+// Create a route for POST /comments that adds a new comment to the list
+// Create a route for GET /comments/:id that returns a single comment
+// Create a route for PUT /comments/:id that modifies a single comment
+// Create a route for DELETE /comments/:id that deletes a single comment
+// Export the router from the module
 
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+var express = require('express');
+var router = express.Router();
 
-const port = 3000;
+var comments = [
+  {id: 1, body: "Hello World"},
+  {id: 2, body: "Hi"}
+];
 
-const server = http.createServer((req, res) => {
-  if (req.url === '/comments' && req.method === 'GET') {
-    fs.readFile(path.join(__dirname, 'comments.json'), (err, data) => {
-      if (err) {
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: err.message }));
-      }
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(data);
-    });
-  } else {
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ message: 'Route not found' }));
-  }
+router.get('/comments', function(req, res) {
+  res.json(comments);
 });
 
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+router.post('/comments', function(req, res) {
+  var newComment = req.body;
+  comments.push(newComment);
+  res.json(newComment);
 });
+
+router.get('/comments/:id', function(req, res) {
+  var comment = comments.find(function(comment) {
+    return comment.id == req.params.id;
+  });
+  res.json(comment);
+});
+
+router.put('/comments/:id', function(req, res) {
+  var comment = comments.find(function(comment) {
+    return comment.id == req.params.id;
+  });
+  comment.body = req.body.body;
+  res.json(comment);
+});
+
+router.delete('/comments/:id', function(req, res) {
+  comments = comments.filter(function(comment) {
+    return comment.id != req.params.id;
+  });
+  res.json({message: "Comment deleted"});
+});
+
+module.exports = router;
