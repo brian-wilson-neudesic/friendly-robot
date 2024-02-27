@@ -1,4 +1,4 @@
-// Create a web server that listens on port 3000 using express
+// Create web server
 // Use the express.Router to create a new router
 // Create a route for GET /comments that returns a list of comments
 // Create a route for POST /comments that adds a new comment to the list
