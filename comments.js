@@ -1,17 +1,35 @@
-// Create a web server that listens on port 3000 and serves the comments.html file.
-// Use the express module to create the web server.
-// The file comments.html is provided and is in the same directory as the solution file.
+// Create a web server
+// 1. Create a web server
+// 2. Define a port to listen to
+// 3. Start the server and listen to the port
+// 4. Create a route to handle the request
+// 5. Get the data from the comments.json
+// 6. Convert the data to a string
+// 7. Send the data back to the client
+// 8. Send the error message to the client if there is an error
 
-const express = require('express');
-const app = express();
+const http = require('http');
+const fs = require('fs');
 const path = require('path');
 
-app.use(express.static('public'));
+const port = 3000;
 
-app.get('/comments', (req, res) => {
-    res.sendFile(path.join(__dirname, 'comments.html'));
+const server = http.createServer((req, res) => {
+  if (req.url === '/comments' && req.method === 'GET') {
+    fs.readFile(path.join(__dirname, 'comments.json'), (err, data) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: err.message }));
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data);
+    });
+  } else {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ message: 'Route not found' }));
+  }
 });
 
-app.listen(3000, () => {
-    console.log('Server listening on port 3000');
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
